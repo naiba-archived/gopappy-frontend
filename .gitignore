@@ -1,0 +1,7 @@
+#files
+*-lock.json
+#dirs
+.idea
+.cache
+dist/
+node_modules
