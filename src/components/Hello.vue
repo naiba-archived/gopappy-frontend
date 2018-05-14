@@ -204,7 +204,7 @@
             }
         },
         mounted: function () {
-            this.$http.get('http://localhost:3010/api/params').then(response => {
+            this.$http.get('/api/params').then(response => {
                 this.platforms = response.body.platforms;
                 this.tags = response.body.tags;
                 this.tags['0'] = "全部";
@@ -243,7 +243,7 @@
                 };
                 format();
 
-                this.$http.post('http://localhost:3010/api/search', this.options).then(response => {
+                this.$http.post('/api/search', this.options).then(response => {
                     f.domainData = response.body;
                 }, response => {
                     console.log("error", response)
