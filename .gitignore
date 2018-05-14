@@ -4,5 +4,4 @@ yarn.lock
 #dirs
 .idea
 .cache
-dist/
 node_modules
