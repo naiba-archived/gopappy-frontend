@@ -1,5 +1,6 @@
 #files
 *-lock.json
+yarn.lock
 #dirs
 .idea
 .cache

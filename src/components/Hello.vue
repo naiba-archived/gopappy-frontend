@@ -1,19 +1,265 @@
 <template>
-    <div class="container">
-        <button class="button is-primary"> Hello {{msg}} !</button>
+    <div>
+        <section class="hero is-fullheight">
+            <div class="hero-body">
+                <div class="container has-text-centered">
+                    <div class="field is-horizontal">
+                        <div class="field-label is-normal">
+                            <label class="label">包含关键字</label>
+                        </div>
+                        <div class="field-body">
+                            <div class="field">
+                                <p class="control is-expanded">
+                                    <b-input v-model="options.keyword" placeholder="nb"></b-input>
+                                </p>
+                            </div>
+                            <div class="field control">
+                                <b-field>
+                                    <b-radio-button v-model="options.kwpos"
+                                                    native-value=0>
+                                        包含
+                                    </b-radio-button>
+
+                                    <b-radio-button v-model="options.kwpos"
+                                                    native-value=1>
+                                        开头
+                                    </b-radio-button>
+
+                                    <b-radio-button v-model="options.kwpos"
+                                                    native-value=2>
+                                        结尾
+                                    </b-radio-button>
+                                </b-field>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field is-horizontal">
+                        <div class="field-label is-normal">
+                            <label class="label">排除</label>
+                        </div>
+                        <div class="field-body">
+                            <div class="field">
+                                <p class="control is-expanded">
+                                    <b-input v-model="options.exclude" placeholder="0,4,i,l"></b-input>
+                                </p>
+                            </div>
+                            <div class="field control">
+                                <div class="field control">
+                                    <b-field>
+                                        <b-radio-button v-model="options.expos"
+                                                        native-value=0>
+                                            包含
+                                        </b-radio-button>
+
+                                        <b-radio-button v-model="options.expos"
+                                                        native-value=1>
+                                            开头
+                                        </b-radio-button>
+
+                                        <b-radio-button v-model="options.expos"
+                                                        native-value=2>
+                                            结尾
+                                        </b-radio-button>
+                                    </b-field>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field is-horizontal">
+                        <div class="field-label is-normal">
+                            <label class="label">分类</label>
+                        </div>
+                        <div class="field-body">
+                            <div class="field control">
+                                <b-field>
+                                    <b-radio-button v-for="(name,key) in tags" v-model="options.tag"
+                                                    v-bind:native-value=key>
+                                        {{name}}
+                                    </b-radio-button>
+                                </b-field>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field is-horizontal">
+                        <div class="field-label is-normal">
+                            <label class="label">后缀</label>
+                        </div>
+                        <div class="field-body">
+                            <div class="field control">
+                                <b-field>
+                                    <b-checkbox-button v-for="(name,key) in TLDsData" v-model="options.tlds"
+                                                       v-bind:native-value=key>
+                                        .{{name}}
+                                    </b-checkbox-button>
+                                </b-field>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field is-horizontal">
+                        <div class="field-label is-normal">
+                            <label class="label">价格区间</label>
+                        </div>
+                        <div class="field-body">
+                            <b-field>
+                                <b-input type="number" v-model="options.minprice" placeholder="1"></b-input>
+                                &nbsp;&nbsp;&nbsp;<span class="label" style="margin-top: 0.3em">至</span>&nbsp;&nbsp;&nbsp;
+                                <b-input type="number" v-model="options.maxprice" placeholder="100000"></b-input>
+                            </b-field>
+                        </div>
+                    </div>
+                    <div class="field is-horizontal">
+                        <div class="field-label is-normal">
+                            <label class="label">长度区间</label>
+                        </div>
+                        <div class="field-body">
+                            <b-field>
+                                <b-input type="number" v-model="options.minlength" placeholder="1"></b-input>
+                                &nbsp;&nbsp;&nbsp;<span class="label" style="margin-top: 0.3em">至</span>&nbsp;&nbsp;&nbsp;
+                                <b-input type="number" v-model="options.maxlength" placeholder="100000"></b-input>
+                            </b-field>
+                        </div>
+                    </div>
+                    <div class="field is-horizontal">
+                        <div class="field-label is-normal">
+                        </div>
+                        <div class="field-body">
+                            <button v-on:click="search" class="button is-primary">搜索</button>
+                        </div>
+                    </div>
+
+                    <b-table
+                            :data="domainData"
+
+                            :loading="searching"
+
+                            paginated
+                            backend-pagination
+                            :total="totalPage"
+                            :current-page="options.page"
+                            :per-page="perPage"
+                            @page-change="onPageChange"
+
+                            backend-sorting
+                            :default-sort-direction="defaultSortOrder"
+                            :default-sort="[sortField, sortOrder]"
+                            @sort="onSort">
+
+                        <template slot-scope="props">
+                            <b-table-column field="name" label="域名">
+                                {{ props.row.name }}
+                            </b-table-column>
+
+                            <b-table-column field="description" label="介绍">
+                                {{ props.row.description }}
+                            </b-table-column>
+
+                            <b-table-column field="price" label="价格" sortable>
+                                {{ props.row.price }}
+                            </b-table-column>
+
+                            <b-table-column field="platform" label="平台">
+                                {{ platforms[props.row.platform]}}
+                            </b-table-column>
+                            <b-table-column field="buy_url" label="购买">
+                                <a target="_black" :href="props.row.buy_url">购买</a>
+                            </b-table-column>
+                        </template>
+                    </b-table>
+                </div>
+            </div>
+        </section>
     </div>
 </template>
-
 
 <script>
     export default {
         name: 'hello',
         data: function () {
             return {
-                msg: "Naiba"
+                domainData: [],
+                platforms: {},
+                TLDsData: {},
+                tags: {},
+                searching: false,
+                totalPage: 60 * 100,
+                perPage: 60,
+                defaultSortOrder: 'asc',
+                sortField: 'price',
+                sortOrder: 'asc',
+                options: {
+                    kwpos: '0',
+                    expos: '0',
+                    keyword: '',
+                    exclude: '',
+                    tag: '0',
+                    tlds: [],
+                    minprice: 0,
+                    maxprice: 0,
+                    minlength: 0,
+                    maxlength: 0,
+                    sort: 1,
+                    order: 1,
+                    page: 1,
+                },
             }
         },
-        methods: {},
+        mounted: function () {
+            this.$http.get('http://localhost:3010/api/params').then(response => {
+                this.platforms = response.body.platforms;
+                this.tags = response.body.tags;
+                this.tags['0'] = "全部";
+                this.TLDsData = response.body.tlds;
+            }, response => {
+                console.log("error", response)
+            });
+        },
+        methods: {
+            search: function (event) {
+
+                if (event !== undefined) {
+                    this.options.page = 1
+                }
+
+                let f = this;
+                let format = function () {
+                    f.options.expos = parseInt(f.options.expos);
+                    f.options.kwpos = parseInt(f.options.kwpos);
+                    f.options.maxprice = parseInt(f.options.maxprice);
+                    f.options.minprice = parseInt(f.options.minprice);
+                    f.options.maxlength = parseInt(f.options.maxlength);
+                    f.options.minlength = parseInt(f.options.minlength);
+                    f.options.tag = parseInt(f.options.tag);
+                    f.options.tlds.forEach(function (a, i) {
+                        f.options.tlds[i] = parseInt(a);
+                    });
+                };
+                let reset = function () {
+                    f.options.expos = f.options.expos.toString();
+                    f.options.kwpos = f.options.kwpos.toString();
+                    f.options.tag = f.options.tag.toString();
+                    f.options.tlds.forEach(function (a, i) {
+                        f.options.tlds[i] = a.toString();
+                    });
+                };
+                format();
+
+                this.$http.post('http://localhost:3010/api/search', this.options).then(response => {
+                    f.domainData = response.body;
+                }, response => {
+                    console.log("error", response)
+                });
+
+                reset();
+            },
+            onPageChange: function (page) {
+                this.options.page = parseInt(page);
+                this.search();
+            },
+            onSort: function (field, order) {
+                this.options.sort = order === "asc" ? 1 : 2;
+                this.search();
+            }
+        },
         components: {}
     }
 </script>
