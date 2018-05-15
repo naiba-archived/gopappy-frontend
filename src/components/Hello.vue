@@ -2,7 +2,7 @@
     <div>
         <section class="hero is-fullheight">
             <div class="hero-body">
-                <div class="container has-text-centered">
+                <div class="container">
                     <div class="field is-horizontal">
                         <div class="field-label is-normal">
                             <label class="label">包含关键字</label>
@@ -40,7 +40,7 @@
                         <div class="field-body">
                             <div class="field">
                                 <p class="control is-expanded">
-                                    <b-input v-model="options.exclude" placeholder="0,4,i,l"></b-input>
+                                    <b-input v-model="options.exclude"></b-input>
                                 </p>
                             </div>
                             <div class="field control">
@@ -72,7 +72,7 @@
                         <div class="field-body">
                             <div class="field control">
                                 <b-field>
-                                    <b-radio-button v-for="(name,key) in tags" v-model="options.tag"
+                                    <b-radio-button class="is-small" v-for="(name,key) in tags" v-model="options.tag"
                                                     v-bind:native-value=key>
                                         {{name}}
                                     </b-radio-button>
@@ -87,7 +87,8 @@
                         <div class="field-body">
                             <div class="field control">
                                 <b-field>
-                                    <b-checkbox-button v-for="(name,key) in TLDsData" v-model="options.tlds"
+                                    <b-checkbox-button class="is-small" v-for="(name,key) in TLDsData"
+                                                       v-model="options.tlds"
                                                        v-bind:native-value=key>
                                         .{{name}}
                                     </b-checkbox-button>
@@ -128,11 +129,11 @@
                     </div>
 
                     <b-table
-                            :data="domainData"
+                            :data="isPaginated?domainData:[]"
 
                             :loading="searching"
 
-                            paginated
+                            :paginated="isPaginated"
                             backend-pagination
                             :total="totalPage"
                             :current-page="options.page"
@@ -181,6 +182,7 @@
                 TLDsData: {},
                 tags: {},
                 searching: false,
+                isPaginated: false,
                 totalPage: 60 * 100,
                 perPage: 60,
                 defaultSortOrder: 'asc',
@@ -190,7 +192,7 @@
                     kwpos: '0',
                     expos: '0',
                     keyword: '',
-                    exclude: '',
+                    exclude: 'o,0,4,i,l',
                     tag: '0',
                     tlds: [],
                     minprice: 0,
@@ -204,7 +206,7 @@
             }
         },
         mounted: function () {
-            this.$http.get('/api/params').then(response => {
+            this.$http.get('params').then(response => {
                 this.platforms = response.body.platforms;
                 this.tags = response.body.tags;
                 this.tags['0'] = "全部";
@@ -215,6 +217,8 @@
         },
         methods: {
             search: function (event) {
+
+                this.searching = true;
 
                 if (event !== undefined) {
                     this.options.page = 1
@@ -243,10 +247,15 @@
                 };
                 format();
 
-                this.$http.post('/api/search', this.options).then(response => {
+                this.$http.post('search', this.options).then(response => {
                     f.domainData = response.body;
+                    if (f.domainData.length > 0) {
+                        f.isPaginated = true
+                    }
+                    f.searching = false
                 }, response => {
-                    console.log("error", response)
+                    console.log("error", response);
+                    f.searching = false
                 });
 
                 reset();

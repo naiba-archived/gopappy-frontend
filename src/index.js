@@ -13,6 +13,9 @@ Vue.use(router);
 
 Vue.use(VueResource);
 
+// Vue.http.options.root = 'http://localhost:3010/api/';
+Vue.http.options.root = '/api/';
+
 const app = new Vue({
     el: '#app',
     router,
