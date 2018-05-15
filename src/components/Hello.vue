@@ -1,6 +1,6 @@
 <template>
     <div>
-        <section class="hero is-fullheight">
+        <section class="hero">
             <div class="hero-body">
                 <div class="container">
                     <div class="field is-horizontal">
