@@ -6,16 +6,14 @@
 
 
 <script>
-
-    export default {
-        name: 'App',
-        data: function () {
-            return {}
-        },
-        methods: {},
-        components: {}
-    }
-
+export default {
+  name: "App",
+  data: function() {
+    return {};
+  },
+  methods: {},
+  components: {}
+};
 </script>
 
 <style scoped>
