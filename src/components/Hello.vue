@@ -16,17 +16,17 @@
                             <div class="field control">
                                 <b-field>
                                     <b-radio-button v-model="options.kwpos"
-                                                    native-value=0>
+                                                    native-value='0'>
                                         包含
                                     </b-radio-button>
 
                                     <b-radio-button v-model="options.kwpos"
-                                                    native-value=1>
+                                                    native-value='1'>
                                         开头
                                     </b-radio-button>
 
                                     <b-radio-button v-model="options.kwpos"
-                                                    native-value=2>
+                                                    native-value='2'>
                                         结尾
                                     </b-radio-button>
                                 </b-field>
@@ -47,17 +47,17 @@
                                 <div class="field control">
                                     <b-field>
                                         <b-radio-button v-model="options.expos"
-                                                        native-value=0>
+                                                        native-value='0'>
                                             包含
                                         </b-radio-button>
 
                                         <b-radio-button v-model="options.expos"
-                                                        native-value=1>
+                                                        native-value='1'>
                                             开头
                                         </b-radio-button>
 
                                         <b-radio-button v-model="options.expos"
-                                                        native-value=2>
+                                                        native-value='2'>
                                             结尾
                                         </b-radio-button>
                                     </b-field>
@@ -72,8 +72,44 @@
                         <div class="field-body">
                             <div class="field control">
                                 <b-field>
-                                    <b-radio-button class="is-small" v-for="(name,key) in tags" v-model="options.tag"
-                                                    v-bind:native-value=key>
+                                    <b-radio-button class="is-small"
+                                                v-for="(name,key) in tags"
+                                                v-model="options.tag"
+                                                v-bind:native-value="key">
+                                        {{name}}
+                                    </b-radio-button>
+                                </b-field>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field is-horizontal" v-if="options.tag ==3">
+                        <div class="field-label is-normal">
+                            <label class="label">拼音</label>
+                        </div>
+                        <div class="field-body">
+                            <div class="field control">
+                                <b-field>
+                                    <b-radio-button class="is-small"
+                                                v-for="(name,key) in tags_pinyin"
+                                                v-model="options.tag"
+                                                v-bind:native-value="key">
+                                        {{name}}
+                                    </b-radio-button>
+                                </b-field>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field is-horizontal" v-if="options.tag >= 7">
+                        <div class="field-label is-normal">
+                            <label class="label">杂米</label>
+                        </div>
+                        <div class="field-body">
+                            <div class="field control">
+                                <b-field>
+                                    <b-radio-button class="is-small"
+                                                v-for="(name,key) in tags_zami"
+                                                v-model="options.tag"
+                                                v-bind:native-value="key">
                                         {{name}}
                                     </b-radio-button>
                                 </b-field>
@@ -82,18 +118,18 @@
                     </div>
                     <div class="field is-horizontal">
                         <div class="field-label is-normal">
-                            <label class="label">后缀</label>
+                            <label class="label">限定后缀</label>
                         </div>
-                        <div class="field-body">
-                            <div class="field control">
-                                <b-field>
-                                    <b-checkbox-button class="is-small" v-for="(name,key) in TLDsData"
-                                                       v-model="options.tlds"
-                                                       v-bind:native-value=key>
-                                        .{{name}}
-                                    </b-checkbox-button>
-                                </b-field>
-                            </div>
+                        <div class="field-body">                        
+                            <b-taginput
+                                v-model="options.tldsV"
+                                autocomplete
+                                field="tld"
+                                icon="web"
+                                placeholder="添加域名"
+                                :data="filteredTags"                                                                
+                                @typing="getFilteredTags">
+                            </b-taginput>
                         </div>
                     </div>
                     <div class="field is-horizontal">
@@ -129,17 +165,15 @@
                     </div>
 
                     <b-table
-                            :data="isPaginated?domainData:[]"
-
+                            v-if="domainData.length > 0 || searching"
+                            :data="domainData"
                             :loading="searching"
-
                             :paginated="isPaginated"
                             backend-pagination
                             :total="totalPage"
                             :current-page="options.page"
                             :per-page="perPage"
                             @page-change="onPageChange"
-
                             backend-sorting
                             :default-sort-direction="defaultSortOrder"
                             :default-sort="[sortField, sortOrder]"
@@ -186,104 +220,136 @@
 </template>
 
 <script>
-    export default {
-        name: 'hello',
-        data: function () {
-            return {
-                domainData: [],
-                platforms: {},
-                TLDsData: {},
-                tags: {},
-                searching: false,
-                isPaginated: false,
-                totalPage: 60 * 100,
-                perPage: 60,
-                defaultSortOrder: 'asc',
-                sortField: 'price',
-                sortOrder: 'asc',
-                options: {
-                    kwpos: '0',
-                    expos: '0',
-                    keyword: '',
-                    exclude: 'o,0,4,i,l',
-                    tag: '0',
-                    tlds: [],
-                    minprice: 0,
-                    maxprice: 0,
-                    minlength: 0,
-                    maxlength: 0,
-                    sort: 1,
-                    order: 1,
-                    page: 1,
-                },
-            }
+export default {
+  name: "hello",
+  data: function() {
+    return {
+      domainData: [],
+      platforms: {},
+      TLDsData: {},
+      filteredTags: [],
+      tags: {
+        1: "纯字母",
+        2: "纯数字",
+        3: "拼音",
+        7: "杂米"
+      },
+      tags_pinyin: {
+        3: "全部",
+        4: "单拼",
+        5: "双拼",
+        6: "三拼"
+      },
+      tags_zami: {
+        7: "全部",
+        8: "NNL",
+        9: "NLN",
+        10: "NLL",
+        11: "LNN",
+        12: "LNL",
+        13: "LLN"
+      },
+      searching: false,
+      isPaginated: false,
+      totalPage: 60 * 100,
+      perPage: 60,
+      defaultSortOrder: "asc",
+      sortField: "price",
+      sortOrder: "asc",
+      options: {
+        kwpos: "0",
+        expos: "0",
+        keyword: "",
+        exclude: "o,0,i,l,1",
+        tag: "0",
+        tldsV: [],
+        tlds: [],
+        minprice: 0,
+        maxprice: 0,
+        minlength: 0,
+        maxlength: 0,
+        sort: 1,
+        order: 1,
+        page: 1
+      }
+    };
+  },
+  mounted: function() {
+    this.$http.get("params").then(
+      response => {
+        this.platforms = response.body.platforms;
+        this.TLDsData = response.body.tlds;
+      },
+      response => {
+        console.log("error", response);
+      }
+    );
+  },
+  methods: {
+    search: function(event) {
+      this.searching = true;
+
+      if (event !== undefined) {
+        this.options.page = 1;
+      }
+
+      let f = this;
+      let format = function() {
+        f.options.expos = parseInt(f.options.expos);
+        f.options.kwpos = parseInt(f.options.kwpos);
+        f.options.maxprice = parseInt(f.options.maxprice);
+        f.options.minprice = parseInt(f.options.minprice);
+        f.options.maxlength = parseInt(f.options.maxlength);
+        f.options.minlength = parseInt(f.options.minlength);
+        f.options.tag = parseInt(f.options.tag);
+        f.options.tldsV.forEach(function(a, i) {
+          f.options.tlds[i] = a.id;
+        });
+      };
+      let reset = function() {
+        f.options.expos = f.options.expos.toString();
+        f.options.kwpos = f.options.kwpos.toString();
+        f.options.tag = f.options.tag.toString();
+      };
+      format();
+
+      this.$http.post("search", this.options).then(
+        response => {
+          f.domainData = response.body;
+          if (f.domainData.length > 0) {
+            f.isPaginated = true;
+          }
+          f.searching = false;
         },
-        mounted: function () {
-            this.$http.get('params').then(response => {
-                this.platforms = response.body.platforms;
-                this.tags = response.body.tags;
-                this.tags['0'] = "全部";
-                this.TLDsData = response.body.tlds;
-            }, response => {
-                console.log("error", response)
-            });
-        },
-        methods: {
-            search: function (event) {
+        response => {
+          console.log("error", response);
+          f.searching = false;
+        }
+      );
 
-                this.searching = true;
-
-                if (event !== undefined) {
-                    this.options.page = 1
-                }
-
-                let f = this;
-                let format = function () {
-                    f.options.expos = parseInt(f.options.expos);
-                    f.options.kwpos = parseInt(f.options.kwpos);
-                    f.options.maxprice = parseInt(f.options.maxprice);
-                    f.options.minprice = parseInt(f.options.minprice);
-                    f.options.maxlength = parseInt(f.options.maxlength);
-                    f.options.minlength = parseInt(f.options.minlength);
-                    f.options.tag = parseInt(f.options.tag);
-                    f.options.tlds.forEach(function (a, i) {
-                        f.options.tlds[i] = parseInt(a);
-                    });
-                };
-                let reset = function () {
-                    f.options.expos = f.options.expos.toString();
-                    f.options.kwpos = f.options.kwpos.toString();
-                    f.options.tag = f.options.tag.toString();
-                    f.options.tlds.forEach(function (a, i) {
-                        f.options.tlds[i] = a.toString();
-                    });
-                };
-                format();
-
-                this.$http.post('search', this.options).then(response => {
-                    f.domainData = response.body;
-                    if (f.domainData.length > 0) {
-                        f.isPaginated = true
-                    }
-                    f.searching = false
-                }, response => {
-                    console.log("error", response);
-                    f.searching = false
-                });
-
-                reset();
-            },
-            onPageChange: function (page) {
-                this.options.page = parseInt(page);
-                this.search();
-            },
-            onSort: function (field, order) {
-                this.options.sort = order === "asc" ? 1 : 2;
-                this.search();
-            }
-        },
-        components: {}
+      reset();
+    },
+    onPageChange: function(page) {
+      this.options.page = parseInt(page);
+      this.search();
+    },
+    onSort: function(field, order) {
+      this.options.sort = order === "asc" ? 1 : 2;
+      this.search();
+    },
+    getFilteredTags(text) {
+      this.filteredTags = this.TLDsData.filter(tld => {
+        return (
+          tld.tld
+            .toString()
+            .toLowerCase()
+            .indexOf(text.toLowerCase()) >= 0
+        );
+      });
     }
+  },
+  components: {}
+};
 </script>
 
 <style scoped>
