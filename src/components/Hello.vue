@@ -1,4 +1,5 @@
 <template>
+<section class="hero is-fullheight">
     <div class="hero-body">
         <div class="container">
             <div class="field is-horizontal">
@@ -200,6 +201,20 @@
             </b-table>
         </div>
     </div>
+    <footer class="footer">
+        <div class="container">
+            <div class="content has-text-centered">
+                <p>
+                    <strong>GoPappy</strong> 域名市场检索 by
+                    <a href="http://nb2.com">奶爸</a> 。
+                    <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=40db397ac7ac2e69f7db27ac6390f39c9621e00df88bd2a0def00dc4ade46302">
+                        <img src="//pub.idqqimg.com/wpa/images/group.png" alt="奶爸 · 大佬委员会" title="大佬委员会(710012414)">
+                    </a>
+                </p>
+            </div>
+        </div>
+        </footer>
+</section>
 </template>
 
 <script>
