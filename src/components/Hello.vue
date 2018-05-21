@@ -81,7 +81,7 @@
                     </div>
                 </div>
             </div>
-            <div class="field is-horizontal" v-if="options.tag ==3">
+            <div class="field is-horizontal" v-if="options.tag >=3 && options.tag < 7">
                 <div class="field-label is-normal">
                     <label class="label">拼音</label>
                 </div>
