@@ -322,6 +322,7 @@ export default {
         f.options.expos = f.options.expos.toString();
         f.options.kwpos = f.options.kwpos.toString();
         f.options.tag = f.options.tag.toString();
+        f.options.tlds = [];
       };
       format();
 
