@@ -160,6 +160,18 @@
                 </div>
                 <div class="field-body">
                     <button v-on:click="search" class="button is-primary">搜索</button>
+                    <div class="control nbb">
+                        <div class="tags has-addons">
+                        <span class="tag">服务米农</span>
+                        <span class="tag is-success">{{stat.search}} 位</span>
+                        </div>
+                    </div>
+                    <div class="control nbb">
+                        <div class="tags has-addons">
+                        <span class="tag">展示域名</span>
+                        <span class="tag is-success">{{stat.domain}} 个</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -222,6 +234,7 @@ export default {
   name: "hello",
   data: function() {
     return {
+      stat: {},
       domainData: [],
       platforms: {},
       TLDsData: {},
@@ -277,6 +290,7 @@ export default {
       response => {
         this.platforms = response.body.platforms;
         this.TLDsData = response.body.tlds;
+        this.stat = response.body.stat;
       },
       response => {
         console.log("error", response);
@@ -351,4 +365,8 @@ export default {
 </script>
 
 <style scoped>
+.nbb {
+  padding-left: 10px;
+  padding-top: 6px;
+}
 </style>

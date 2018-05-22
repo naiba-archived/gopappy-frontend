@@ -8,9 +8,7 @@ import router from './router'
 import App from './App.vue';
 
 Vue.use(Buefy);
-
 Vue.use(router);
-
 Vue.use(VueResource);
 
 // Vue.http.options.root = 'http://localhost:3010/api/';

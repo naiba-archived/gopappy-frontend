@@ -16,6 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "buefy": "^0.6.5",
+    "fingerprintjs2": "^1.8.0",
     "vue": "^2.5.16",
     "vue-resource": "^1.5.0",
     "vue-router": "^3.0.1",
