@@ -5,3 +5,4 @@ yarn.lock
 .idea
 .cache
 node_modules
+dist

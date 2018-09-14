@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Buefy from 'buefy'
 import VueResource from "vue-resource"
-import 'buefy/lib/buefy.css';
 
 import store from './store/store'
 import router from './router'
